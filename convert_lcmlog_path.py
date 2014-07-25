@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import struct
 import argparse
 import re
@@ -13,6 +15,9 @@ def replace_goem_string(msg, pattern, replace):
     return msg
 
 def rewrite_lcmlog_geom_string(fin, fout, pattern, replace):
+    """
+    Look through the log, find all messages on the DRAKE_VIEWER_LOAD_ROBOT channel, and run a regex on all of the link_data.geom_data.string_data values contained in those messages. All other messages are untouched. The resulting data is written to a new lcmlog file [fout].
+    """
     while True:
         header_bytes = fin.read(28)
         if len(header_bytes) < 28:
@@ -33,11 +38,11 @@ def rewrite_lcmlog_geom_string(fin, fout, pattern, replace):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Rewrite an LCM log with all references to mesh files updated to point to a different directory')
+    parser = argparse.ArgumentParser(description='Rewrite an LCM log with all references to mesh files updated to point to a different directory. O')
     parser.add_argument('infile', type=str, help='the input LCM log filename')
     parser.add_argument('outfile', type=str, nargs='?', default='out.lcm', help='the output LCM log filename')
     parser.add_argument('pattern', type=str, help='the pattern to be replaced (regex is supported)')
-    parser.add_argument('replace', type=str, help='the string to replace all occurrences of [pattern] with')
+    parser.add_argument('replace', type=str, help='the string with which to replace all occurrences of [pattern]')
     args = parser.parse_args()
     with open(args.infile, 'rb') as fin:
         with open(args.outfile, 'wb') as fout:
